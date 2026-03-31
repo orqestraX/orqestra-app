@@ -419,7 +419,7 @@ function StatsBar() {
 // âââ How it Works âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function HowItWorks() {
   const steps = [
-    { num: '01', title: 'Join as an Operator', desc: 'Sign up with your license type - cultivator, manufacturer, dispensary, contractor, logistics, or fulfillment hub. Verification takes under 24 hours.' },
+    { num: '01', title: 'Join as an Operator', desc: 'Sign up with your license type - cultivator, manufacturer, dispensary, or courier. Verification takes under 24 hours.' },
     { num: '02', title: 'Connect to the Supply Chain', desc: 'Browse verified vendors, post your products or services, and start forming direct business relationships - without brokers or middlemen.' },
     { num: '03', title: 'Trade, Fulfill & Scale', desc: 'Place orders, book logistics, hire contractors, and manage everything from one dashboard. Every transaction is compliant and tracked.' },
   ]
