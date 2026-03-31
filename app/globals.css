@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --orq-bg: #070D09;
+  --orq-surface: #0E1A11;
+  --orq-elevated: #162219;
+  --orq-border: #1E3326;
+  --orq-green: #22C55E;
+  --orq-gold: #F59E0B;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--orq-bg);
+  color: #F0FDF4;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--orq-bg); }
+::-webkit-scrollbar-thumb { background: var(--orq-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2d5040; }
+
+/* Dot grid utility */
+.dot-grid {
+  background-image: radial-gradient(circle, #22C55E18 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* Glow effects */
+.glow-green {
+  box-shadow: 0 0 60px -15px rgba(34, 197, 94, 0.4);
+}
+.glow-gold {
+  box-shadow: 0 0 60px -15px rgba(245, 158, 11, 0.3);
+}
+.text-glow {
+  text-shadow: 0 0 40px rgba(34, 197, 94, 0.5);
+}
+
+/* Card hover transitions */
+.orq-card {
+  transition: all 0.2s ease;
+  border: 1px solid var(--orq-border);
+  background: var(--orq-surface);
+}
+.orq-card:hover {
+  border-color: #22C55E40;
+  background: var(--orq-elevated);
+  transform: translateY(-2px);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #22C55E 0%, #86EFAC 50%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button base */
+.btn-primary {
+  @apply bg-orq-green hover:bg-green-400 text-black font-semibold px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2;
+}
+.btn-secondary {
+  @apply border border-orq-border hover:border-orq-green/40 text-orq-text bg-transparent hover:bg-orq-elevated px-6 py-3 rounded-lg transition-all duration-200 inline-flex items-center gap-2;
+}
+
+/* Section padding */
+.section-pad {
+  @apply py-24 px-4 md:px-8 lg:px-16;
+}
+.container-max {
+  @apply max-w-7xl mx-auto;
+}
+
+/* Fade animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeUp 0.7s ease-out forwards;
+}
+.delay-100 { animation-delay: 0.1s; opacity: 0; }
+.delay-200 { animation-delay: 0.2s; opacity: 0; }
+.delay-300 { animation-delay: 0.3s; opacity: 0; }
+.delay-400 { animation-delay: 0.4s; opacity: 0; }
+.delay-500 { animation-delay: 0.5s; opacity: 0; }
