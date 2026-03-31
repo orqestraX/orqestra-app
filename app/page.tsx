@@ -91,16 +91,6 @@ const operatorTypes = [
     features: ['Vendor marketplace', 'Automated reordering', 'POS integration ready', 'Compliance tracking'],
   },
   {
-    icon: <HardHatIcon />,
-    color: 'text-amber-400',
-    bg: 'bg-amber-950/50',
-    border: 'border-amber-900/50',
-    label: 'Contractors',
-    tag: 'Labor & Services',
-    description: 'A dedicated labor marketplace for cannabis-licensed contractors - trimmers, extractors, packagers, and specialists - connected to operators who need them.',
-    features: ['Job board & bidding', 'License verification', 'Timesheet management', 'Direct operator contracts'],
-  },
-  {
     icon: <TruckIcon />,
     color: 'text-cyan-400',
     bg: 'bg-cyan-950/50',
@@ -109,16 +99,6 @@ const operatorTypes = [
     tag: 'Transport & Delivery',
     description: 'Manage compliant cannabis transport jobs, track shipments in real time, and handle manifests - all inside one platform with GPS route tracking.',
     features: ['Manifest generation', 'GPS route tracking', 'Proof of delivery', 'Compliance audit trail'],
-  },
-  {
-    icon: <BoxIcon />,
-    color: 'text-rose-400',
-    bg: 'bg-rose-950/50',
-    border: 'border-rose-900/50',
-    label: 'Fulfillment Hubs',
-    tag: 'Storage & Packaging',
-    description: 'Offer warehousing, packaging, and fulfillment services to operators who need scalable storage and order processing without the overhead.',
-    features: ['Inventory storage', 'Pick & pack orders', 'White-label packaging', 'Hub network listing'],
   },
 ]
 
@@ -196,7 +176,7 @@ const pricingTiers = [
     name: 'Enterprise',
     price: 'Custom',
     period: '',
-    desc: 'For large multi-location operators, MSOs, and fulfillment hubs.',
+    desc: 'For large multi-location operators and MSOs.',
     color: 'border-orq-gold/40',
     badge: null,
     features: [
@@ -337,7 +317,7 @@ function Hero() {
 
         {/* Subtext */}
         <p className="animate-fade-up delay-200 text-lg md:text-xl text-orq-text-2 max-w-3xl mx-auto mb-10 leading-relaxed">
-          Orqestra connects every operator in the cannabis supply chain - cultivators, manufacturers, dispensaries, contractors, logistics, and fulfillment - on one powerful B2B platform. Think Amazon Business, built for cannabis.
+          Orqestra connects every operator in the cannabis supply chain - cultivators, manufacturers, dispensaries, and logistics - on one powerful B2B platform. Think Amazon Business, built for cannabis.
         </p>
 
         {/* CTA row */}
@@ -509,7 +489,7 @@ function PlatformFeatures() {
               <span className="gradient-text">Uber for logistics.</span>
             </h2>
             <p className="text-orq-text-2 leading-relaxed mb-8">
-              Orqestra is infrastructure, not just a marketplace. We are building the connective tissue that the cannabis industry has been missing - combining trade, logistics, labor, fulfillment, payments, and compliance into one integrated system.
+              Orqestra is infrastructure, not just a marketplace. We are building the connective tissue that the cannabis industry has been missing - combining trade, logistics, payments, and compliance into one integrated system.
             </p>
             <Link href="/onboarding" className="btn-primary">
               Start Building on Orqestra <ArrowRightIcon />
@@ -538,7 +518,6 @@ function MarketplacePreview() {
     { name: 'Blue Dream Flower', vendor: 'Mesa Verde Farms', type: 'Cultivator', price: '$1,200/lb', stock: '42 lbs', badge: 'In Stock' },
     { name: 'OG Kush Pre-Rolls (20ct)', vendor: 'High Desert Mfg', type: 'Manufacturer', price: '$380/box', stock: '200 units', badge: 'Fast Ship' },
     { name: 'Live Resin Cartridges', vendor: 'NM Extract Labs', type: 'Manufacturer', price: '$14.50/unit', stock: '1,500 units', badge: 'New' },
-    { name: 'Premium Trim Service', vendor: 'CannaCrew NM', type: 'Contractor', price: '$18/hr', stock: '8 workers', badge: 'Available' },
   ]
 
   return (
