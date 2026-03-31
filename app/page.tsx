@@ -97,7 +97,7 @@ const operatorTypes = [
     border: 'border-amber-900/50',
     label: 'Contractors',
     tag: 'Labor & Services',
-    description: 'A dedicated labor marketplace for cannabis-licensed contractors â trimmers, extractors, packagers, and specialists â connected to operators who need them.',
+    description: 'A dedicated labor marketplace for cannabis-licensed contractors - trimmers, extractors, packagers, and specialists - connected to operators who need them.',
     features: ['Job board & bidding', 'License verification', 'Timesheet management', 'Direct operator contracts'],
   },
   {
@@ -107,7 +107,7 @@ const operatorTypes = [
     border: 'border-cyan-900/50',
     label: 'Logistics',
     tag: 'Transport & Delivery',
-    description: 'Manage compliant cannabis transport jobs, track shipments in real time, and handle manifests â all inside one platform with GPS route tracking.',
+    description: 'Manage compliant cannabis transport jobs, track shipments in real time, and handle manifests - all inside one platform with GPS route tracking.',
     features: ['Manifest generation', 'GPS route tracking', 'Proof of delivery', 'Compliance audit trail'],
   },
   {
@@ -125,7 +125,7 @@ const operatorTypes = [
 const platformFeatures = [
   {
     title: 'B2B Marketplace',
-    desc: 'A live, searchable catalog of cannabis products across cultivators and manufacturers â with verified listings, lab results, and real-time stock.',
+    desc: 'A live, searchable catalog of cannabis products across cultivators and manufacturers - with verified listings, lab results, and real-time stock.',
     icon: 'ð',
   },
   {
@@ -325,8 +325,8 @@ function Hero() {
         {/* Launch badge */}
         <div className="animate-fade-up inline-flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/60 rounded-full px-4 py-2 text-sm text-emerald-400 mb-8 backdrop-blur-sm">
           <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-          Now in Beta â New Mexico Cannabis Market
-          <span className="text-emerald-600">â</span>
+          Now in Beta - New Mexico Cannabis Market
+          <span className="text-emerald-600">→</span>
         </div>
 
         {/* Headline */}
@@ -337,7 +337,7 @@ function Hero() {
 
         {/* Subtext */}
         <p className="animate-fade-up delay-200 text-lg md:text-xl text-orq-text-2 max-w-3xl mx-auto mb-10 leading-relaxed">
-          Orqestra connects every operator in the cannabis supply chain â cultivators, manufacturers, dispensaries, contractors, logistics, and fulfillment â on one powerful B2B platform. Think Amazon Business, built for cannabis.
+          Orqestra connects every operator in the cannabis supply chain - cultivators, manufacturers, dispensaries, contractors, logistics, and fulfillment - on one powerful B2B platform. Think Amazon Business, built for cannabis.
         </p>
 
         {/* CTA row */}
@@ -397,7 +397,7 @@ function StatsBar() {
   const stats = [
     { value: '6', label: 'Operator Types' },
     { value: '1', label: 'Unified Platform' },
-    { value: 'â', label: 'Connections' },
+    { value: '∞', label: 'Connections' },
     { value: 'NM', label: 'Launching Here' },
   ]
   return (
@@ -419,8 +419,8 @@ function StatsBar() {
 // âââ How it Works âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function HowItWorks() {
   const steps = [
-    { num: '01', title: 'Join as an Operator', desc: 'Sign up with your license type â cultivator, manufacturer, dispensary, contractor, logistics, or fulfillment hub. Verification takes under 24 hours.' },
-    { num: '02', title: 'Connect to the Supply Chain', desc: 'Browse verified vendors, post your products or services, and start forming direct business relationships â without brokers or middlemen.' },
+    { num: '01', title: 'Join as an Operator', desc: 'Sign up with your license type - cultivator, manufacturer, dispensary, contractor, logistics, or fulfillment hub. Verification takes under 24 hours.' },
+    { num: '02', title: 'Connect to the Supply Chain', desc: 'Browse verified vendors, post your products or services, and start forming direct business relationships - without brokers or middlemen.' },
     { num: '03', title: 'Trade, Fulfill & Scale', desc: 'Place orders, book logistics, hire contractors, and manage everything from one dashboard. Every transaction is compliant and tracked.' },
   ]
   return (
@@ -460,7 +460,7 @@ function OperatorTypes() {
         <div className="text-center mb-16">
           <span className="text-xs font-semibold text-orq-gold tracking-widest uppercase">Built For Everyone</span>
           <h2 className="text-4xl md:text-5xl font-bold text-orq-text mt-3 mb-4">Every operator. One platform.</h2>
-          <p className="text-orq-text-2 max-w-2xl mx-auto">Whether you grow it, make it, sell it, move it, or store it â Orqestra has a role built specifically for your business.</p>
+          <p className="text-orq-text-2 max-w-2xl mx-auto">Whether you grow it, make it, sell it, move it, or store it - Orqestra has a role built specifically for your business.</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -509,7 +509,7 @@ function PlatformFeatures() {
               <span className="gradient-text">Uber for logistics.</span>
             </h2>
             <p className="text-orq-text-2 leading-relaxed mb-8">
-              Orqestra is infrastructure, not just a marketplace. We are building the connective tissue that the cannabis industry has been missing â combining trade, logistics, labor, fulfillment, payments, and compliance into one integrated system.
+              Orqestra is infrastructure, not just a marketplace. We are building the connective tissue that the cannabis industry has been missing - combining trade, logistics, labor, fulfillment, payments, and compliance into one integrated system.
             </p>
             <Link href="/onboarding" className="btn-primary">
               Start Building on Orqestra <ArrowRightIcon />
@@ -599,7 +599,7 @@ function MarketplacePreview() {
 
           <div className="text-center py-5 border-t border-orq-border">
             <Link href="/onboarding" className="text-sm text-orq-green hover:text-emerald-300 transition font-medium">
-              Join to access the full marketplace â
+              Join to access the full marketplace →
             </Link>
           </div>
         </div>
