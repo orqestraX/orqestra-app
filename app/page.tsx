@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-// ─── Icon components (inline SVG to avoid import issues) ────────────────────
+// âââ Icon components (inline SVG to avoid import issues) ââââââââââââââââââââ
 const LeafIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
@@ -58,7 +58,7 @@ const ChevronDownIcon = () => (
   </svg>
 )
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// âââ Data ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const operatorTypes = [
   {
     icon: <LeafIcon />,
@@ -97,7 +97,7 @@ const operatorTypes = [
     border: 'border-amber-900/50',
     label: 'Contractors',
     tag: 'Labor & Services',
-    description: 'A dedicated labor marketplace for cannabis-licensed contractors — trimmers, extractors, packagers, and specialists — connected to operators who need them.',
+    description: 'A dedicated labor marketplace for cannabis-licensed contractors â trimmers, extractors, packagers, and specialists â connected to operators who need them.',
     features: ['Job board & bidding', 'License verification', 'Timesheet management', 'Direct operator contracts'],
   },
   {
@@ -107,7 +107,7 @@ const operatorTypes = [
     border: 'border-cyan-900/50',
     label: 'Logistics',
     tag: 'Transport & Delivery',
-    description: 'Manage compliant cannabis transport jobs, track shipments in real time, and handle manifests — all inside one platform with GPS route tracking.',
+    description: 'Manage compliant cannabis transport jobs, track shipments in real time, and handle manifests â all inside one platform with GPS route tracking.',
     features: ['Manifest generation', 'GPS route tracking', 'Proof of delivery', 'Compliance audit trail'],
   },
   {
@@ -125,33 +125,33 @@ const operatorTypes = [
 const platformFeatures = [
   {
     title: 'B2B Marketplace',
-    desc: 'A live, searchable catalog of cannabis products across cultivators and manufacturers — with verified listings, lab results, and real-time stock.',
-    icon: '🛒',
+    desc: 'A live, searchable catalog of cannabis products across cultivators and manufacturers â with verified listings, lab results, and real-time stock.',
+    icon: 'ð',
   },
   {
     title: 'Compliant Transactions',
     desc: 'Every order is tied to the state compliance layer. Manifests, COAs, and chain of custody are handled automatically.',
-    icon: '🔒',
+    icon: 'ð',
   },
   {
     title: 'Integrated Logistics',
     desc: 'Book transport, track shipments, and generate manifests from the same platform you use to order. No more phone calls.',
-    icon: '📦',
+    icon: 'ð¦',
   },
   {
     title: 'Contractor Network',
     desc: 'Post jobs or bid on contracts in the first dedicated cannabis labor marketplace. Background-checked and licensed workers only.',
-    icon: '👷',
+    icon: 'ð·',
   },
   {
     title: 'Payments & Invoicing',
     desc: 'Cannabis-friendly ACH and wire payments with automated invoicing, net terms management, and payment tracking.',
-    icon: '💳',
+    icon: 'ð³',
   },
   {
     title: 'Analytics & Insights',
     desc: 'Dashboards for every operator type. Track sales, fulfillment rates, logistics costs, and market trends across your operations.',
-    icon: '📊',
+    icon: 'ð',
   },
 ]
 
@@ -231,7 +231,7 @@ const faqs = [
   },
 ]
 
-// ─── Navbar ──────────────────────────────────────────────────────────────────
+// âââ Navbar ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -299,7 +299,7 @@ function Navbar() {
   )
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
+// âââ Hero âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Hero() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -325,19 +325,19 @@ function Hero() {
         {/* Launch badge */}
         <div className="animate-fade-up inline-flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/60 rounded-full px-4 py-2 text-sm text-emerald-400 mb-8 backdrop-blur-sm">
           <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-          Now in Beta — New Mexico Cannabis Market
-          <span className="text-emerald-600">→</span>
+          Now in Beta â New Mexico Cannabis Market
+          <span className="text-emerald-600">â</span>
         </div>
 
         {/* Headline */}
         <h1 className="animate-fade-up delay-100 text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05] mb-6">
-          The Operating System<br />
-          <span className="gradient-text text-glow">for Cannabis Business</span>
+          The Marketplace<br />
+          <span className="gradient-text text-glow">for Cannabis Operators</span>
         </h1>
 
         {/* Subtext */}
         <p className="animate-fade-up delay-200 text-lg md:text-xl text-orq-text-2 max-w-3xl mx-auto mb-10 leading-relaxed">
-          Orqestra connects every operator in the cannabis supply chain — cultivators, manufacturers, dispensaries, contractors, logistics, and fulfillment — on one powerful B2B platform. Think Amazon Business, built for cannabis.
+          Orqestra connects every operator in the cannabis supply chain â cultivators, manufacturers, dispensaries, contractors, logistics, and fulfillment â on one powerful B2B platform. Think Amazon Business, built for cannabis.
         </p>
 
         {/* CTA row */}
@@ -366,7 +366,7 @@ function Hero() {
           </form>
         ) : (
           <div className="animate-fade-up text-emerald-400 text-sm">
-            ✓ You're on the list! We'll be in touch shortly.
+            â You're on the list! We'll be in touch shortly.
           </div>
         )}
 
@@ -392,12 +392,12 @@ function Hero() {
   )
 }
 
-// ─── Stats Bar ────────────────────────────────────────────────────────────────
+// âââ Stats Bar ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function StatsBar() {
   const stats = [
     { value: '6', label: 'Operator Types' },
     { value: '1', label: 'Unified Platform' },
-    { value: '∞', label: 'Connections' },
+    { value: 'â', label: 'Connections' },
     { value: 'NM', label: 'Launching Here' },
   ]
   return (
@@ -416,11 +416,11 @@ function StatsBar() {
   )
 }
 
-// ─── How it Works ─────────────────────────────────────────────────────────────
+// âââ How it Works âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function HowItWorks() {
   const steps = [
-    { num: '01', title: 'Join as an Operator', desc: 'Sign up with your license type — cultivator, manufacturer, dispensary, contractor, logistics, or fulfillment hub. Verification takes under 24 hours.' },
-    { num: '02', title: 'Connect to the Supply Chain', desc: 'Browse verified vendors, post your products or services, and start forming direct business relationships — without brokers or middlemen.' },
+    { num: '01', title: 'Join as an Operator', desc: 'Sign up with your license type â cultivator, manufacturer, dispensary, contractor, logistics, or fulfillment hub. Verification takes under 24 hours.' },
+    { num: '02', title: 'Connect to the Supply Chain', desc: 'Browse verified vendors, post your products or services, and start forming direct business relationships â without brokers or middlemen.' },
     { num: '03', title: 'Trade, Fulfill & Scale', desc: 'Place orders, book logistics, hire contractors, and manage everything from one dashboard. Every transaction is compliant and tracked.' },
   ]
   return (
@@ -452,7 +452,7 @@ function HowItWorks() {
   )
 }
 
-// ─── Operator Types ───────────────────────────────────────────────────────────
+// âââ Operator Types âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function OperatorTypes() {
   return (
     <section id="operators" className="section-pad bg-orq-surface/30">
@@ -460,7 +460,7 @@ function OperatorTypes() {
         <div className="text-center mb-16">
           <span className="text-xs font-semibold text-orq-gold tracking-widest uppercase">Built For Everyone</span>
           <h2 className="text-4xl md:text-5xl font-bold text-orq-text mt-3 mb-4">Every operator. One platform.</h2>
-          <p className="text-orq-text-2 max-w-2xl mx-auto">Whether you grow it, make it, sell it, move it, or store it — Orqestra has a role built specifically for your business.</p>
+          <p className="text-orq-text-2 max-w-2xl mx-auto">Whether you grow it, make it, sell it, move it, or store it â Orqestra has a role built specifically for your business.</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -495,7 +495,7 @@ function OperatorTypes() {
   )
 }
 
-// ─── Platform Features ────────────────────────────────────────────────────────
+// âââ Platform Features ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function PlatformFeatures() {
   return (
     <section className="section-pad">
@@ -509,7 +509,7 @@ function PlatformFeatures() {
               <span className="gradient-text">Uber for logistics.</span>
             </h2>
             <p className="text-orq-text-2 leading-relaxed mb-8">
-              Orqestra is infrastructure, not just a marketplace. We are building the connective tissue that the cannabis industry has been missing — combining trade, logistics, labor, fulfillment, payments, and compliance into one integrated system.
+              Orqestra is infrastructure, not just a marketplace. We are building the connective tissue that the cannabis industry has been missing â combining trade, logistics, labor, fulfillment, payments, and compliance into one integrated system.
             </p>
             <Link href="/onboarding" className="btn-primary">
               Start Building on Orqestra <ArrowRightIcon />
@@ -532,7 +532,7 @@ function PlatformFeatures() {
   )
 }
 
-// ─── Marketplace Preview ──────────────────────────────────────────────────────
+// âââ Marketplace Preview ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function MarketplacePreview() {
   const items = [
     { name: 'Blue Dream Flower', vendor: 'Mesa Verde Farms', type: 'Cultivator', price: '$1,200/lb', stock: '42 lbs', badge: 'In Stock' },
@@ -579,13 +579,13 @@ function MarketplacePreview() {
               <div key={i} className="orq-card rounded-xl p-4">
                 {/* Placeholder image */}
                 <div className="w-full h-28 rounded-lg bg-gradient-to-br from-orq-elevated to-orq-border mb-4 flex items-center justify-center text-3xl">
-                  {i === 0 ? '🌿' : i === 1 ? '🚬' : i === 2 ? '💧' : '👷'}
+                  {i === 0 ? 'ð¿' : i === 1 ? 'ð¬' : i === 2 ? 'ð§' : 'ð·'}
                 </div>
                 <div className="flex items-start justify-between mb-1">
                   <h5 className="text-xs font-semibold text-orq-text leading-tight">{item.name}</h5>
                   <span className="text-xs bg-emerald-950/60 text-emerald-400 px-1.5 py-0.5 rounded flex-shrink-0 ml-1">{item.badge}</span>
                 </div>
-                <p className="text-xs text-orq-text-3 mb-3">{item.vendor} · {item.type}</p>
+                <p className="text-xs text-orq-text-3 mb-3">{item.vendor} Â· {item.type}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-orq-green font-bold text-sm">{item.price}</span>
                   <span className="text-xs text-orq-text-3">{item.stock}</span>
@@ -599,7 +599,7 @@ function MarketplacePreview() {
 
           <div className="text-center py-5 border-t border-orq-border">
             <Link href="/onboarding" className="text-sm text-orq-green hover:text-emerald-300 transition font-medium">
-              Join to access the full marketplace →
+              Join to access the full marketplace â
             </Link>
           </div>
         </div>
@@ -608,7 +608,7 @@ function MarketplacePreview() {
   )
 }
 
-// ─── Pricing ──────────────────────────────────────────────────────────────────
+// âââ Pricing ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Pricing() {
   return (
     <section id="pricing" className="section-pad">
@@ -661,7 +661,7 @@ function Pricing() {
   )
 }
 
-// ─── FAQ ──────────────────────────────────────────────────────────────────────
+// âââ FAQ ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function FAQ() {
   const [open, setOpen] = useState<number | null>(null)
   return (
@@ -696,7 +696,7 @@ function FAQ() {
   )
 }
 
-// ─── CTA Banner ───────────────────────────────────────────────────────────────
+// âââ CTA Banner âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function CTABanner() {
   return (
     <section className="section-pad">
@@ -726,7 +726,7 @@ function CTABanner() {
   )
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
+// âââ Footer âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Footer() {
   const links = {
     Platform: ['Marketplace', 'Logistics', 'Contractor Network', 'Payments', 'Analytics'],
@@ -746,10 +746,10 @@ function Footer() {
               <span className="font-bold text-lg text-orq-text">Orqestra</span>
             </div>
             <p className="text-orq-text-3 text-xs leading-relaxed mb-4">
-              The B2B operating system for the cannabis supply chain. Built in New Mexico.
+              The B2B marketplace for cannabis operators. Built in New Mexico.
             </p>
             <div className="flex gap-3">
-              {['𝕏', 'in', 'ig'].map(s => (
+              {['ð', 'in', 'ig'].map(s => (
                 <button key={s} className="w-8 h-8 rounded-lg bg-orq-elevated border border-orq-border text-orq-text-3 hover:border-orq-green/40 hover:text-orq-green transition text-sm">
                   {s}
                 </button>
@@ -770,15 +770,15 @@ function Footer() {
           ))}
         </div>
         <div className="border-t border-orq-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-orq-text-3">© 2026 Orqestra. All rights reserved. Built for licensed cannabis operators.</p>
-          <p className="text-xs text-orq-text-3">🌿 Proudly built in New Mexico</p>
+          <p className="text-xs text-orq-text-3">Â© 2026 Orqestra. All rights reserved. Built for licensed cannabis operators.</p>
+          <p className="text-xs text-orq-text-3">ð¿ Proudly built in New Mexico</p>
         </div>
       </div>
     </footer>
   )
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// âââ Page âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#070D09]">
