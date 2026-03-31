@@ -137,57 +137,39 @@ const platformFeatures = [
 
 const pricingTiers = [
   {
-    name: 'Starter',
-    price: '$99',
+    name: 'Operator',
+    price: '$34.99',
     period: '/mo',
-    desc: 'Perfect for small operators getting started on the platform.',
-    color: 'border-orq-border',
-    badge: null,
-    features: [
-      'Access to B2B marketplace',
-      'Up to 50 listings',
-      '3% transaction fee',
-      'Basic analytics',
-      'Email support',
-    ],
-    cta: 'Get Started',
-    ctaStyle: 'btn-secondary',
-  },
-  {
-    name: 'Professional',
-    price: '$299',
-    period: '/mo',
-    desc: 'Built for growing operators who need automation and volume.',
+    desc: 'Everything you need to run your cannabis business. One flat rate for all operator types.',
     color: 'border-orq-green/50',
-    badge: 'Most Popular',
+    badge: 'All Operators',
     features: [
-      'Everything in Starter',
+      'Full B2B marketplace access',
       'Unlimited listings',
-      '1.5% transaction fee',
-      'Logistics integration',
-      'Contractor marketplace',
-      'Advanced analytics',
-      'Priority support',
+      '3% transaction fee',
+      'Dashboard & analytics',
+      'Order management',
+      'Compliance tools',
+      'Email & chat support',
     ],
     cta: 'Get Early Access',
     ctaStyle: 'btn-primary',
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
+    name: 'Promo Boost',
+    price: 'Add-on',
     period: '',
-    desc: 'For large multi-location operators and MSOs.',
-    color: 'border-orq-gold/40',
+    desc: 'Get featured placement and priority visibility across the marketplace.',
+    color: 'border-orq-border',
     badge: null,
     features: [
-      'Everything in Professional',
-      'Volume transaction rates',
-      'Dedicated account manager',
-      'Custom API integrations',
-      'White-label options',
-      'SLA guarantees',
+      'Featured listing placement',
+      'Homepage spotlight',
+      'Priority search ranking',
+      'Promoted in Market Pulse',
+      'Analytics dashboard',
     ],
-    cta: 'Contact Sales',
+    cta: 'Contact Us',
     ctaStyle: 'btn-secondary',
   },
 ]
@@ -595,10 +577,10 @@ function Pricing() {
         <div className="text-center mb-16">
           <span className="text-xs font-semibold text-orq-green tracking-widest uppercase">Pricing</span>
           <h2 className="text-4xl md:text-5xl font-bold text-orq-text mt-3 mb-4">Simple, transparent pricing.</h2>
-          <p className="text-orq-text-2 max-w-xl mx-auto">No hidden fees. Start free for 30 days. Upgrade as you grow.</p>
+          <p className="text-orq-text-2 max-w-xl mx-auto">One flat rate for every operator. Unlimited listings, 3% transaction fee. No hidden costs.</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {pricingTiers.map((tier, i) => (
             <div key={i} className={`relative rounded-2xl border p-8 bg-orq-surface flex flex-col ${tier.color} ${i === 1 ? 'glow-green scale-105' : ''}`}>
               {tier.badge && (
