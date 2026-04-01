@@ -45,7 +45,7 @@ export async function createPaymentIntent(opts: {
     .single()
 
   if (error) return { ok: false, error: error.message }
-  return { ok: true, intentId: data!.id 
+  return { ok: true, intentId: data!.id }
 }
 
 // Get ACH instructions for an operator
