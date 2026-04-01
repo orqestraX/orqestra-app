@@ -23,7 +23,7 @@ export async function sendPushNotification(payload: PushPayload): Promise<void> 
 
   const messages: ExpoPushMessage[] = tokens
     .filter((t: { token: string }) => Expo.isExpoPushToken(t.token))
-    .map(t => ({
+    .map((t: { token: string }) => ({
       to: t.token,
       sound: 'default' as const,
       title: payload.title,
