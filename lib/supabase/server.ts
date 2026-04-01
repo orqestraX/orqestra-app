@@ -1,8 +1,8 @@
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// ── Server client (for Server Components + API routes) ────────────
-// Uses anon key + RLS — safe for user-facing server code.
+// ââ Server client (for Server Components + API routes) ââââââââââââ
+// Uses anon key + RLS â safe for user-facing server code.
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies()
   return createServerClient(
@@ -11,13 +11,13 @@ export async function createServerSupabaseClient() {
     {
       cookies: {
         getAll() { return cookieStore.getAll() },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             )
           } catch {
-            // Server Component — cookies set in middleware instead
+            // Server Component â cookies set in middleware instead
           }
         },
       },
@@ -25,7 +25,7 @@ export async function createServerSupabaseClient() {
   )
 }
 
-// ── Admin client (service role — NEVER use client-side) ──────────
+// ââ Admin client (service role â NEVER use client-side) ââââââââââ
 // Bypasses RLS. Only for server-side admin operations.
 // Import path: @/lib/supabase/admin
 export function createAdminClient() {
