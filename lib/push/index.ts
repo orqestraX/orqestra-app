@@ -15,14 +15,14 @@ export async function sendPushNotification(payload: PushPayload): Promise<void> 
 
   // Get stored push tokens for this operator
   const { data: tokens } = await supabase
-    .from('push_tokens')
+    .from('push_tokens'
     .select('token')
     .eq('operator_id', payload.operatorId)
 
   if (!tokens || tokens.length === 0) return
 
   const messages: ExpoPushMessage[] = tokens
-    .filter(t => Expo.isExpoPushToken(t.token))
+    .filter((t: { token: string }) => Expo.isExpoPushToken(t.token))
     .map(t => ({
       to: t.token,
       sound: 'default' as const,
