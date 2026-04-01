@@ -39,7 +39,7 @@ export async function sendPushNotification(payload: PushPayload): Promise<void> 
       const receipts = await expo.sendPushNotificationsAsync(chunk)
       // Handle any invalid tokens
       for (const receipt of receipts) {
-        if (receipt.status === 'error' && receipt.details?.error === 'DeviceNotRegistered') {
+        if (receipt.status === 'error' && (receipt.details as { error?: string } | undefined)?.error === 'DeviceNotRegistered') {
           // Token is no longer valid — clean it up (fire and forget)
           supabase.from('push_tokens').delete().eq('operator_id', payload.operatorId)
         }
