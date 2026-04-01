@@ -9,10 +9,10 @@ async function getStats() {
     supabase.from('license_verifications').select('status'),
     supabase.from('orders').select('total').eq('status', 'delivered'),
   ])
-  const ops = operators.data ?? []
-  const ords = orders.data ?? []
-  const licVerifs = licenses.data ?? []
-  const rev = revenue.data ?? []
+  const ops = (operators.data ?? []) as { account_status: string }[]
+  const ords = (orders.data ?? []) as { status: string; total: number }[]
+  const licVerifs = (licenses.data ?? []) as { status: string }[]
+  const rev = (revenue.data ?? []) as { total: number }[]
   return {
     totalOperators: ops.length,
     activeOperators: ops.filter(o => o.account_status === 'active').length,
@@ -80,7 +80,7 @@ export default async function AdminPage() {
                 </span>
                 <span className="text-sm text-gray-300">
                   <span className="text-green-400 font-medium">{String(event.action)}</span>
-                  {event.target_id && <span className="text-gray-500"> → {String(event.target_id)}</span>}
+                  {event.target_id && <span className="text-gray-500"> â {String(event.target_id)}</span>}
                 </span>
                 {event.actor_id && (
                   <span className="ml-auto text-xs text-gray-600 font-mono shrink-0">{String(event.actor_id).slice(0,8)}</span>
