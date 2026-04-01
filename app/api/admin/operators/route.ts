@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient, createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/session'
 
 export async function GET() {
@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const supabase = createAdminClient()
-  const supabaseServer = await import('@/lib/supabase/server').then(m => m.createServerSupabaseClient())
+  const supabaseServer = await createServerSupabaseClient()
   const { data: { user } } = await supabaseServer.auth.getUser()
 
   const { error } = await supabase
@@ -34,11 +34,10 @@ export async function PATCH(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // Audit log
   await supabase.from('audit_log').insert({
     action: `operator_status_${account_status}`,
     target_id: id,
-    actor_id: user?.id,
+    actor_id: user?.id ?? null,
     metadata: { account_status },
   })
 
