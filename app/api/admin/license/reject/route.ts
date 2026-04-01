@@ -1,40 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient, createServerSupabaseClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/session'
+import { sendEmail } from '@/lib/email'
+import { licenseRejectedEmail } from '@/lib/email/templates'
 
-// POST /api/admin/license/reject
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.user_metadata?.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  await requireAdmin()
+  const { operator_id, verification_id, reason } = await req.json()
+  if (!operator_id || !verification_id || !reason) {
+    return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
-  const formData = await req.formData()
-  const id = formData.get('id') as string
-  const operatorId = formData.get('operator_id') as string
-  const reason = formData.get('reason') as string || 'License could not be verified with NMRLD records.'
+  const supabase = createAdminClient()
+  const supabaseServer = await createServerSupabaseClient()
+  const { data: { user } } = await supabaseServer.auth.getUser()
 
-  const admin = createAdminClient()
+  const [{ error: verError }, { error: opError, data: operator }] = await Promise.all([
+    supabase
+      .from('license_verifications')
+      .update({ status: 'rejected', rejection_reason: reason, reviewed_at: new Date().toISOString(), reviewed_by: user?.id ?? null })
+      .eq('id', verification_id),
+    supabase
+      .from('operators')
+      .update({ license_status: 'rejected' })
+      .eq('id', operator_id)
+      .select('business_name, email')
+      .single(),
+  ])
 
-  await admin.from('license_verifications').update({
-    status: 'invalid',
-    reviewed_at: new Date().toISOString(),
-    reviewed_by: user.id,
-    rejection_reason: reason,
-  }).eq('id', id)
+  if (verError || opError) {
+    return NextResponse.json({ error: verError?.message ?? opError?.message }, { status: 500 })
+  }
 
-  await admin.from('operators').update({
-    license_status: 'invalid',
-    account_status: 'rejected',
-  }).eq('id', operatorId)
-
-  await admin.from('audit_log').insert({
-    actor_id: user.id,
-    action: 'license.rejected',
-    resource_id: operatorId,
-    metadata: { verification_id: id, reason },
+  await supabase.from('audit_log').insert({
+    action: 'license_rejected',
+    target_id: operator_id,
+    actor_id: user?.id ?? null,
+    metadata: { verification_id, reason },
   })
 
-  return NextResponse.redirect(new URL('/admin/licenses', req.url))
+  if (operator?.email) {
+    await sendEmail({
+      to: operator.email,
+      subject: 'Action required: License verification issue — Orqestra',
+      html: licenseRejectedEmail({ businessName: operator.business_name, reason }),
+    })
+  }
+
+  return NextResponse.json({ ok: true })
 }
