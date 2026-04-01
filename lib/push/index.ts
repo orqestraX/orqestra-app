@@ -15,7 +15,7 @@ export async function sendPushNotification(payload: PushPayload): Promise<void> 
 
   // Get stored push tokens for this operator
   const { data: tokens } = await supabase
-    .from('push_tokens'
+    .from('push_tokens')
     .select('token')
     .eq('operator_id', payload.operatorId)
 
