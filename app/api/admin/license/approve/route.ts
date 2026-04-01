@@ -1,44 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient, createServerSupabaseClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/session'
+import { sendEmail } from '@/lib/email'
+import { licenseApprovedEmail } from '@/lib/email/templates'
 
-// POST /api/admin/license/approve
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.user_metadata?.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  await requireAdmin()
+  const { operator_id, verification_id } = await req.json()
+  if (!operator_id || !verification_id) {
+    return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
-  const formData = await req.formData()
-  const id = formData.get('id') as string
-  const operatorId = formData.get('operator_id') as string
+  const supabase = createAdminClient()
+  const supabaseServer = await createServerSupabaseClient()
+  const { data: { user } } = await supabaseServer.auth.getUser()
 
-  const admin = createAdminClient()
+  const [{ error: verError }, { error: opError, data: operator }] = await Promise.all([
+    supabase
+      .from('license_verifications')
+      .update({ status: 'approved', reviewed_at: new Date().toISOString(), reviewed_by: user?.id ?? null })
+      .eq('id', verification_id),
+    supabase
+      .from('operators')
+      .update({ license_status: 'verified', account_status: 'active' })
+      .eq('id', operator_id)
+      .select('business_name, email')
+      .single(),
+  ])
 
-  // Update verification record
-  await admin.from('license_verifications').update({
-    status: 'verified',
-    reviewed_at: new Date().toISOString(),
-    reviewed_by: user.id,
-  }).eq('id', id)
+  if (verError || opError) {
+    return NextResponse.json({ error: verError?.message ?? opError?.message }, { status: 500 })
+  }
 
-  // Activate the operator account
-  await admin.from('operators').update({
-    license_status: 'verified',
-    license_verified_at: new Date().toISOString(),
-    account_status: 'verified',
-    approved_at: new Date().toISOString(),
-    approved_by: user.id,
-  }).eq('id', operatorId)
-
-  // Audit
-  await admin.from('audit_log').insert({
-    actor_id: user.id,
-    action: 'license.approved',
-    resource_id: operatorId,
-    metadata: { verification_id: id },
+  await supabase.from('audit_log').insert({
+    action: 'license_approved',
+    target_id: operator_id,
+    actor_id: user?.id ?? null,
+    metadata: { verification_id },
   })
 
-  return NextResponse.redirect(new URL('/admin/licenses', req.url))
+  // Send approval email
+  if (operator?.email) {
+    await sendEmail({
+      to: operator.email,
+      subject: '✅ Your NM cannabis license has been verified — Orqestra',
+      html: licenseApprovedEmail({ businessName: operator.business_name }),
+    })
+  }
+
+  return NextResponse.json({ ok: true })
 }
