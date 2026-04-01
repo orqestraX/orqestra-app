@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { licenseVerifSchema, validateInput } from '@/lib/validations'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
-// POST /api/license/submit — operator submits their license for review
+// POST /api/license/submit â operator submits their license for review
 export async function POST(req: NextRequest) {
   try {
     // 1. Auth check
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     // 4. Validate input
     const body = await req.json()
     const { data, error } = validateInput(licenseVerifSchema, body)
-    if (error) {
-      return NextResponse.json({ error }, { status: 400 })
+    if (error || !data) {
+      return NextResponse.json({ error: error ?? 'Invalid input' }, { status: 400 })
     }
 
     // 5. Insert into verification queue
