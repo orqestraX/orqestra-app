@@ -123,8 +123,10 @@ export async function middleware(req: NextRequest) {
   // 4. Auth protection for private routes
   if (isProtectedPath(pathname) && !isPublicPath(pathname)) {
     // Check for Supabase session cookie
-    const sessionCookie = req.cookies.get('sb-access-token') || req.cookies.get('supabase-auth-token')
-    if (!sessionCookie) {
+    const hasSession = req.cookies.getAll().some(c =>
+      (c.name.startsWith('sb-') && c.name.includes('auth-token')) || c.name === 'supabase-auth-token'
+    )
+    if (!hasSession) {
       const signInUrl = new URL('/auth/signin', req.url)
       signInUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(signInUrl)
