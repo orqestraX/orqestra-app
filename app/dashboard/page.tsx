@@ -1,410 +1,246 @@
-'use client'
-import { useState } from 'react'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
-// ─── Types & Data ──────────────────────────────────────────────────────────────
-type OperatorRole = 'cultivator' | 'manufacturer' | 'dispensary' | 'contractor' | 'logistics' | 'fulfillment'
-
-const roleConfig: Record<OperatorRole, {
-  label: string; emoji: string; color: string; borderColor: string; textColor: string;
-  stats: { label: string; value: string; change: string; up: boolean }[];
-  quickActions: { label: string; icon: string }[];
-  recentActivity: { text: string; time: string; type: string }[];
-}> = {
-  cultivator: {
-    label: 'Cultivator', emoji: '🌱', color: 'emerald', borderColor: 'border-emerald-700/40', textColor: 'text-emerald-400',
-    stats: [
-      { label: 'Active Listings', value: '12', change: '+3 this week', up: true },
-      { label: 'Pending Orders', value: '4', change: '2 new today', up: true },
-      { label: 'Revenue MTD', value: '$24,800', change: '+18% vs last month', up: true },
-      { label: 'Available Inventory', value: '284 lbs', change: '-12 lbs sold', up: false },
-    ],
-    quickActions: [
-      { label: 'Add Harvest Listing', icon: '+ 🌿' },
-      { label: 'View Orders', icon: '📋' },
-      { label: 'Upload COA', icon: '📄' },
-      { label: 'Book Logistics', icon: '🚚' },
-    ],
-    recentActivity: [
-      { text: 'New order from Mesa Verde Dispensary — 40 lbs Blue Dream', time: '2h ago', type: 'order' },
-      { text: 'COA uploaded for Batch #2026-04A', time: '5h ago', type: 'doc' },
-      { text: 'NM Extracts Lab placed inquiry — 60 lbs trim', time: '1d ago', type: 'inquiry' },
-      { text: 'Listing "OG Kush Flower" approved', time: '2d ago', type: 'approved' },
-    ],
-  },
-  manufacturer: {
-    label: 'Manufacturer', emoji: '🏭', color: 'blue', borderColor: 'border-blue-700/40', textColor: 'text-blue-400',
-    stats: [
-      { label: 'Active SKUs', value: '28', change: '+5 this month', up: true },
-      { label: 'Production Runs', value: '3', change: '1 in progress', up: true },
-      { label: 'Revenue MTD', value: '$87,200', change: '+22% vs last month', up: true },
-      { label: 'Raw Material Stock', value: '180 lbs', change: 'Order needed soon', up: false },
-    ],
-    quickActions: [
-      { label: 'Source Raw Material', icon: '🌿' },
-      { label: 'Add Product', icon: '+ 📦' },
-      { label: 'Production Log', icon: '🏭' },
-      { label: 'Distribute Products', icon: '→' },
-    ],
-    recentActivity: [
-      { text: 'Order placed — 80 lbs flower from Sunburst Farms', time: '3h ago', type: 'order' },
-      { text: 'Production Run #14 completed — 2,400 cartridges', time: '1d ago', type: 'production' },
-      { text: 'Dispensary order — Desert Rose RX, 500 pre-rolls', time: '1d ago', type: 'order' },
-      { text: 'New SKU "Watermelon Gummies 10mg" listed', time: '3d ago', type: 'listing' },
-    ],
-  },
-  dispensary: {
-    label: 'Dispensary', emoji: '🏪', color: 'purple', borderColor: 'border-purple-700/40', textColor: 'text-purple-400',
-    stats: [
-      { label: 'Open Purchase Orders', value: '6', change: '2 arriving today', up: true },
-      { label: 'Products in Cart', value: '14 items', change: '$3,200 value', up: true },
-      { label: 'Spend MTD', value: '$52,400', change: '-8% vs last month', up: false },
-      { label: 'Approved Vendors', value: '19', change: '+4 new vendors', up: true },
-    ],
-    quickActions: [
-      { label: 'Browse Marketplace', icon: '🛒' },
-      { label: 'Reorder Favorites', icon: '🔄' },
-      { label: 'Track Deliveries', icon: '📍' },
-      { label: 'Hire Contractor', icon: '👷' },
-    ],
-    recentActivity: [
-      { text: 'Delivery arriving today — High Desert Mfg, $2,800 order', time: '1h ago', type: 'delivery' },
-      { text: 'Reorder triggered — Blue Dream Flower (auto)', time: '6h ago', type: 'auto' },
-      { text: 'New vendor approved — Sunset Labs NM', time: '1d ago', type: 'vendor' },
-      { text: 'Invoice paid — Mesa Verde Farms, $1,400', time: '2d ago', type: 'payment' },
-    ],
-  },
-  contractor: {
-    label: 'Contractor', emoji: '👷', color: 'amber', borderColor: 'border-amber-700/40', textColor: 'text-amber-400',
-    stats: [
-      { label: 'Active Jobs', value: '2', change: '1 ending this week', up: false },
-      { label: 'Open Bids', value: '5', change: '3 new opportunities', up: true },
-      { label: 'Earnings MTD', value: '$8,640', change: '+12% vs last month', up: true },
-      { label: 'Worker Rating', value: '4.9★', change: 'Top 5% on platform', up: true },
-    ],
-    quickActions: [
-      { label: 'Browse Job Board', icon: '📋' },
-      { label: 'Submit Bid', icon: '✍️' },
-      { label: 'Log Hours', icon: '⏱️' },
-      { label: 'Update Profile', icon: '👤' },
-    ],
-    recentActivity: [
-      { text: 'New job posted — Trim crew needed, Rio Rancho Farm, 2 weeks', time: '30m ago', type: 'job' },
-      { text: 'Bid accepted — Packaging at Albuquerque Extracts', time: '1d ago', type: 'bid' },
-      { text: 'Hours approved — Desert Sun Farm, 40hrs @ $20/hr', time: '2d ago', type: 'payment' },
-      { text: 'License renewal reminder — expires in 45 days', time: '3d ago', type: 'alert' },
-    ],
-  },
-  logistics: {
-    label: 'Logistics', emoji: '🚚', color: 'cyan', borderColor: 'border-cyan-700/40', textColor: 'text-cyan-400',
-    stats: [
-      { label: 'Active Routes', value: '3', change: '1 en route now', up: true },
-      { label: 'Deliveries Today', value: '8', change: '3 completed', up: true },
-      { label: 'Revenue MTD', value: '$18,400', change: '+9% vs last month', up: true },
-      { label: 'Compliance Rate', value: '100%', change: 'No violations', up: true },
-    ],
-    quickActions: [
-      { label: 'New Transport Job', icon: '+ 🚚' },
-      { label: 'Generate Manifest', icon: '📄' },
-      { label: 'Track Vehicles', icon: '📍' },
-      { label: 'View Schedule', icon: '📅' },
-    ],
-    recentActivity: [
-      { text: 'Manifest generated — Albuquerque → Santa Fe, $4,200 order', time: '1h ago', type: 'manifest' },
-      { text: 'Delivery confirmed — Mesa Verde Dispensary, 8:42am', time: '4h ago', type: 'delivery' },
-      { text: 'New transport job posted — $380, 45mi route', time: '6h ago', type: 'job' },
-      { text: 'Vehicle inspection passed — Unit #3', time: '1d ago', type: 'compliance' },
-    ],
-  },
-  fulfillment: {
-    label: 'Fulfillment Hub', emoji: '📦', color: 'rose', borderColor: 'border-rose-700/40', textColor: 'text-rose-400',
-    stats: [
-      { label: 'Units in Storage', value: '12,400', change: '+800 received today', up: true },
-      { label: 'Orders to Pick', value: '34', change: '8 urgent', up: false },
-      { label: 'Revenue MTD', value: '$31,200', change: '+15% vs last month', up: true },
-      { label: 'Storage Utilization', value: '74%', change: '26% capacity left', up: false },
-    ],
-    quickActions: [
-      { label: 'Receive Inventory', icon: '📥' },
-      { label: 'Pick & Pack Queue', icon: '📦' },
-      { label: 'Schedule Pickup', icon: '🚚' },
-      { label: 'Inventory Report', icon: '📊' },
-    ],
-    recentActivity: [
-      { text: 'Inbound received — High Desert Mfg, 1,200 units', time: '2h ago', type: 'receive' },
-      { text: 'Order packed — Desert Rose RX, 80 units, awaiting pickup', time: '4h ago', type: 'packed' },
-      { text: 'New storage contract — Sunset Labs, 3 months', time: '1d ago', type: 'contract' },
-      { text: 'Inventory count completed — Zone A, 99.8% accuracy', time: '2d ago', type: 'audit' },
-    ],
-  },
+interface Operator {
+  id: string
+  business_name: string
+  operator_type: string
+  account_status: string
+  license_status: string | null
+  subscription_active: boolean | null
+  city: string | null
 }
 
-const activityColors: Record<string, string> = {
-  order: 'bg-emerald-500', inquiry: 'bg-blue-500', doc: 'bg-purple-500', approved: 'bg-amber-500',
-  production: 'bg-blue-500', listing: 'bg-emerald-500', delivery: 'bg-cyan-500', payment: 'bg-amber-500',
-  auto: 'bg-purple-500', vendor: 'bg-rose-500', job: 'bg-amber-500', bid: 'bg-emerald-500',
-  alert: 'bg-red-500', manifest: 'bg-cyan-500', compliance: 'bg-emerald-500', receive: 'bg-blue-500',
-  packed: 'bg-purple-500', contract: 'bg-amber-500', audit: 'bg-emerald-500',
+interface Listing {
+  id: string
+  status: string
 }
 
-// ─── Sidebar ───────────────────────────────────────────────────────────────────
-function Sidebar({ role, onRoleChange }: { role: OperatorRole; onRoleChange: (r: OperatorRole) => void }) {
+interface Order {
+  id: string
+  status: string
+  total: number
+  created_at: string
+}
+
+export default async function DashboardPage() {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) redirect('/auth/signin?redirect=/dashboard')
+
+  const { data: operatorData } = await supabase
+    .from('operators')
+    .select('id, business_name, operator_type, account_status, license_status, subscription_active, city')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!operatorData) redirect('/onboarding')
+
+  const op = operatorData as Operator
+
+  if (op.account_status === 'pending') redirect('/onboarding/pending')
+  if (op.account_status === 'rejected') redirect('/onboarding/pending')
+  if (op.account_status === 'suspended') redirect('/suspended')
+
+  const [listingsResult, sellerOrdersResult, buyerOrdersResult] = await Promise.all([
+    supabase
+      .from('listings')
+      .select('id, status')
+      .eq('operator_id', op.id)
+      .eq('status', 'active'),
+    supabase
+      .from('orders')
+      .select('id, status, total, created_at')
+      .eq('seller_id', op.id)
+      .order('created_at', { ascending: false })
+      .limit(20),
+    supabase
+      .from('orders')
+      .select('id, status, total, created_at')
+      .eq('buyer_id', op.id)
+      .order('created_at', { ascending: false })
+      .limit(20),
+  ])
+
+  const listings = (listingsResult.data ?? []) as Listing[]
+  const sellerOrders = (sellerOrdersResult.data ?? []) as Order[]
+  const buyerOrders = (buyerOrdersResult.data ?? []) as Order[]
+
+  const isDispensary = op.operator_type === 'dispensary'
+  const myOrders = isDispensary ? buyerOrders : sellerOrders
+  const pendingOrders = myOrders.filter((o) => o.status === 'pending').length
+
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const mtdTotal = myOrders
+    .filter((o) => o.created_at >= monthStart && o.status !== 'cancelled')
+    .reduce((sum, o) => sum + (o.total || 0), 0)
+
+  const hasActivity = myOrders.length > 0 || listings.length > 0
+  const complianceOk = op.license_status === 'verified' && op.subscription_active === true
+
+  const typeLabel: Record<string, string> = {
+    cultivator: 'Cultivator',
+    manufacturer: 'Manufacturer',
+    dispensary: 'Dispensary',
+    courier: 'Courier',
+  }
+  const typeIcon: Record<string, string> = {
+    cultivator: '🌱',
+    manufacturer: '⚙️',
+    dispensary: '🏪',
+    courier: '🚚',
+  }
+
   const navItems = [
-    { icon: '⬜', label: 'Dashboard', active: true },
-    { icon: '🛒', label: 'Marketplace', active: false },
-    { icon: '📋', label: 'Orders', active: false },
-    { icon: '📦', label: 'Inventory', active: false },
-    { icon: '🚚', label: 'Logistics', active: false },
-    { icon: '👷', label: 'Contractors', active: false },
-    { icon: '💳', label: 'Payments', active: false },
-    { icon: '📊', label: 'Analytics', active: false },
-    { icon: '⚙️', label: 'Settings', active: false },
+    { href: '/dashboard', label: 'Dashboard', icon: '⊞' },
+    { href: '/listings', label: isDispensary ? 'Marketplace' : 'My Listings', icon: isDispensary ? '🛒' : '📦' },
+    { href: '/orders', label: isDispensary ? 'My Orders' : 'Sales', icon: '📋' },
+    { href: '/logistics', label: 'Logistics', icon: '🚚' },
+    { href: '/compliance', label: 'Compliance', icon: '✓' },
+    { href: '/settings', label: 'Settings', icon: '⚙' },
   ]
 
-  const roles: OperatorRole[] = ['cultivator', 'manufacturer', 'dispensary', 'contractor', 'logistics', 'fulfillment']
+  const stats = [
+    {
+      label: isDispensary ? 'Open Orders' : 'Active Listings',
+      value: isDispensary
+        ? myOrders.filter((o) => ['pending', 'confirmed', 'in_transit'].includes(o.status)).length
+        : listings.length,
+      sub: isDispensary ? 'in progress' : 'available to buy',
+      color: '#7c3aed',
+    },
+    {
+      label: 'Pending',
+      value: pendingOrders,
+      sub: 'awaiting confirmation',
+      color: '#d97706',
+    },
+    {
+      label: isDispensary ? 'Spend MTD' : 'Revenue MTD',
+      value: `$${mtdTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      sub: now.toLocaleString('default', { month: 'long', year: 'numeric' }),
+      color: '#059669',
+    },
+  ]
 
   return (
-    <div className="w-64 min-h-screen bg-orq-surface border-r border-orq-border flex flex-col">
-      {/* Logo */}
-      <div className="p-5 border-b border-orq-border">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-orq-green flex items-center justify-center">
-            <span className="text-black font-black text-sm">O</span>
-          </div>
-          <div>
-            <div className="font-bold text-orq-text text-sm">Orqestra</div>
-            <div className="text-xs text-orq-text-3">Operator Portal</div>
-          </div>
+    <div style={{ display: 'flex', height: '100vh', background: '#0f1117', color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <aside style={{ width: 240, background: '#1a1d2e', borderRight: '1px solid #2d3148', display: 'flex', flexDirection: 'column', padding: '24px 0' }}>
+        <div style={{ padding: '0 20px 24px', borderBottom: '1px solid #2d3148' }}>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#7c3aed', letterSpacing: '-0.5px' }}>Orqestra</div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cannabis OS</div>
         </div>
-      </div>
-
-      {/* Role switcher (demo only) */}
-      <div className="p-4 border-b border-orq-border">
-        <div className="text-xs text-orq-text-3 mb-2 uppercase tracking-wider font-semibold">Preview as:</div>
-        <select
-          value={role}
-          onChange={e => onRoleChange(e.target.value as OperatorRole)}
-          className="w-full bg-orq-elevated border border-orq-border rounded-lg px-3 py-2 text-xs text-orq-text focus:outline-none focus:border-orq-green/50"
-        >
-          {roles.map(r => (
-            <option key={r} value={r}>{roleConfig[r].emoji} {roleConfig[r].label}</option>
+        <nav style={{ flex: 1, padding: '16px 12px' }}>
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, color: '#94a3b8', textDecoration: 'none', fontSize: 14, marginBottom: 2 }}
+            >
+              <span style={{ fontSize: 16 }}>{item.icon}</span>
+              {item.label}
+            </Link>
           ))}
-        </select>
-      </div>
-
-      {/* Nav */}
-      <nav className="flex-1 p-3">
-        {navItems.map(item => (
-          <button
-            key={item.label}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 text-sm transition ${
-              item.active
-                ? 'bg-orq-green/10 border border-orq-green/20 text-orq-green font-medium'
-                : 'text-orq-text-2 hover:bg-orq-elevated hover:text-orq-text'
-            }`}
-          >
-            <span>{item.icon}</span>
-            {item.label}
-          </button>
-        ))}
-      </nav>
-
-      {/* User footer */}
-      <div className="p-4 border-t border-orq-border">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-orq-green/20 flex items-center justify-center text-orq-green text-sm font-bold">
-            D
+        </nav>
+        <div style={{ padding: '16px 20px', borderTop: '1px solid #2d3148' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{op.business_name}</div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+            {typeIcon[op.operator_type]} {typeLabel[op.operator_type] ?? op.operator_type}
+            {op.city ? ` · ${op.city}` : ''}
           </div>
+          <div style={{ marginTop: 8 }}>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 999, background: op.account_status === 'verified' ? '#14532d' : '#713f12', color: op.account_status === 'verified' ? '#86efac' : '#fde68a' }}>
+              {op.account_status}
+            </span>
+          </div>
+        </div>
+      </aside>
+
+      <main style={{ flex: 1, overflow: 'auto', padding: '32px 40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
           <div>
-            <div className="text-xs font-semibold text-orq-text">Demo Operator</div>
-            <div className="text-xs text-orq-text-3">New Mexico · Verified ✓</div>
+            <h1 style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>
+              Welcome back, {op.business_name}
+            </h1>
+            <p style={{ color: '#64748b', marginTop: 4, fontSize: 14 }}>
+              {now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
           </div>
-        </div>
-        <Link href="/onboarding" className="block w-full text-center bg-orq-green hover:bg-green-400 text-black text-xs font-semibold py-2 rounded-lg transition">
-          Complete Signup →
-        </Link>
-      </div>
-    </div>
-  )
-}
-
-// ─── Dashboard Content ─────────────────────────────────────────────────────────
-function DashboardContent({ role }: { role: OperatorRole }) {
-  const config = roleConfig[role]
-
-  return (
-    <div className="flex-1 overflow-auto">
-      {/* Header */}
-      <div className="sticky top-0 bg-[#070D09]/95 backdrop-blur-md border-b border-orq-border px-8 py-4 flex items-center justify-between z-10">
-        <div>
-          <h1 className="text-xl font-bold text-orq-text">{config.emoji} {config.label} Dashboard</h1>
-          <p className="text-xs text-orq-text-3">Welcome back · New Mexico · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <button className="w-9 h-9 rounded-lg bg-orq-elevated border border-orq-border flex items-center justify-center text-orq-text-2 hover:border-orq-green/40 transition">
-              🔔
-            </button>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orq-green rounded-full flex items-center justify-center text-black text-xs font-bold">3</div>
-          </div>
-          <button className="w-9 h-9 rounded-lg bg-orq-elevated border border-orq-border flex items-center justify-center text-orq-text-2 hover:border-orq-green/40 transition">
-            ⚙️
-          </button>
-        </div>
-      </div>
-
-      <div className="p-8">
-        {/* Banner for demo */}
-        <div className="bg-orq-green/10 border border-orq-green/30 rounded-xl p-4 mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-orq-green text-xl">🚀</span>
-            <div>
-              <div className="text-sm font-semibold text-orq-text">You're viewing a preview dashboard</div>
-              <div className="text-xs text-orq-text-2">Complete onboarding to activate your account and access live data.</div>
+          {!complianceOk && (
+            <div style={{ background: '#451a03', border: '1px solid #92400e', borderRadius: 8, padding: '10px 16px', fontSize: 13, color: '#fde68a', maxWidth: 280 }}>
+              Compliance action required — check your license and subscription status.
             </div>
-          </div>
-          <Link href="/onboarding" className="bg-orq-green hover:bg-green-400 text-black text-xs font-bold px-4 py-2 rounded-lg transition whitespace-nowrap">
-            Complete Setup
-          </Link>
+          )}
         </div>
 
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {config.stats.map((stat, i) => (
-            <div key={i} className="bg-orq-surface border border-orq-border rounded-xl p-5">
-              <div className="text-xs text-orq-text-3 uppercase tracking-wider mb-2">{stat.label}</div>
-              <div className="text-2xl font-black text-orq-text mb-1">{stat.value}</div>
-              <div className={`text-xs flex items-center gap-1 ${stat.up ? 'text-emerald-400' : 'text-orq-text-3'}`}>
-                {stat.up ? '↑' : '↓'} {stat.change}
-              </div>
+        {!hasActivity && (
+          <div style={{ background: '#1a1d2e', border: '1px dashed #2d3148', borderRadius: 12, padding: '40px 32px', textAlign: 'center', marginBottom: 32 }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>{typeIcon[op.operator_type] ?? '🌿'}</div>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#f1f5f9', margin: '0 0 8px' }}>
+              {isDispensary ? 'Ready to source?' : 'Ready to sell?'}
+            </h2>
+            <p style={{ color: '#64748b', fontSize: 14, margin: '0 auto 20px', maxWidth: 400 }}>
+              {isDispensary
+                ? 'Browse the marketplace to find cultivators and manufacturers in New Mexico.'
+                : 'Create your first listing to start selling to dispensaries across New Mexico.'}
+            </p>
+            <Link
+              href={isDispensary ? '/listings' : '/listings/new'}
+              style={{ display: 'inline-block', background: '#7c3aed', color: '#fff', padding: '10px 20px', borderRadius: 8, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}
+            >
+              {isDispensary ? 'Browse Marketplace' : 'Create Listing'}
+            </Link>
+          </div>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
+          {stats.map((stat) => (
+            <div key={stat.label} style={{ background: '#1a1d2e', border: '1px solid #2d3148', borderRadius: 12, padding: '24px' }}>
+              <div style={{ fontSize: 12, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>{stat.label}</div>
+              <div style={{ fontSize: 32, fontWeight: 700, color: stat.color }}>{stat.value}</div>
+              <div style={{ fontSize: 12, color: '#475569', marginTop: 4 }}>{stat.sub}</div>
             </div>
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Quick Actions */}
-          <div className="lg:col-span-1">
-            <div className="bg-orq-surface border border-orq-border rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-orq-text mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {config.quickActions.map((action, i) => (
-                  <button
-                    key={i}
-                    className="bg-orq-elevated border border-orq-border rounded-xl p-4 text-center hover:border-orq-green/30 hover:bg-orq-elevated/80 transition group"
-                  >
-                    <div className="text-2xl mb-2">{action.icon}</div>
-                    <div className="text-xs text-orq-text-2 group-hover:text-orq-text transition leading-tight">{action.label}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Marketplace spotlight */}
-            <div className="bg-orq-surface border border-orq-border rounded-xl p-5 mt-4">
-              <h3 className="text-sm font-semibold text-orq-text mb-4">Marketplace Spotlight</h3>
-              <div className="space-y-3">
-                {[
-                  { name: 'Blue Dream Flower', price: '$1,200/lb', vendor: 'Mesa Verde Farms' },
-                  { name: 'Live Resin Carts', price: '$14.50/unit', vendor: 'NM Extract Labs' },
-                  { name: 'Pre-Roll 20ct Boxes', price: '$380/box', vendor: 'High Desert Mfg' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-orq-border last:border-0">
-                    <div>
-                      <div className="text-xs font-medium text-orq-text">{item.name}</div>
-                      <div className="text-xs text-orq-text-3">{item.vendor}</div>
-                    </div>
-                    <div className="text-xs font-semibold text-orq-green">{item.price}</div>
-                  </div>
-                ))}
-              </div>
-              <button className="w-full mt-4 text-xs text-orq-green hover:text-emerald-300 transition font-medium">
-                View Full Marketplace →
-              </button>
-            </div>
-          </div>
-
-          {/* Activity feed + chart */}
-          <div className="lg:col-span-2 space-y-5">
-            {/* Revenue chart (simplified visual) */}
-            <div className="bg-orq-surface border border-orq-border rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-orq-text">Revenue Overview</h3>
-                <div className="flex gap-2">
-                  {['7D', '30D', '90D'].map(p => (
-                    <button key={p} className={`text-xs px-2.5 py-1 rounded-md transition ${p === '30D' ? 'bg-orq-green/20 text-orq-green border border-orq-green/30' : 'text-orq-text-3 hover:text-orq-text'}`}>{p}</button>
+        <div style={{ background: '#1a1d2e', border: '1px solid #2d3148', borderRadius: 12, padding: '24px' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: '#f1f5f9', margin: '0 0 16px' }}>Recent Activity</h2>
+          {myOrders.length === 0 ? (
+            <p style={{ color: '#475569', fontSize: 14 }}>No orders yet — activity will appear here once transactions begin.</p>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #2d3148' }}>
+                  {['Order ID', 'Status', 'Total', 'Date'].map((h) => (
+                    <th key={h} style={{ textAlign: 'left', padding: '8px 12px', color: '#64748b', fontWeight: 500 }}>{h}</th>
                   ))}
-                </div>
-              </div>
-              {/* Simplified bar chart */}
-              <div className="flex items-end gap-2 h-28">
-                {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 100, 80, 88, 72, 92, 68, 85, 95, 78, 90, 82, 88, 94, 79, 86, 91, 98, 84, 100].map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 rounded-sm transition-all"
-                    style={{
-                      height: `${h}%`,
-                      background: i >= 27
-                        ? 'linear-gradient(to top, #22C55E, #86EFAC)'
-                        : '#1E3326',
-                    }}
-                  />
+                </tr>
+              </thead>
+              <tbody>
+                {myOrders.slice(0, 10).map((order) => (
+                  <tr key={order.id} style={{ borderBottom: '1px solid #1e2235' }}>
+                    <td style={{ padding: '10px 12px', color: '#94a3b8', fontFamily: 'monospace' }}>{order.id.slice(0, 8)}&hellip;</td>
+                    <td style={{ padding: '10px 12px' }}>
+                      <span style={{
+                        padding: '2px 10px', borderRadius: 999, fontSize: 11, border: '1px solid #2d3148',
+                        background: order.status === 'delivered' ? '#14532d' : order.status === 'pending' ? '#1e3a5f' : '#1a1d2e',
+                        color: order.status === 'delivered' ? '#86efac' : order.status === 'pending' ? '#93c5fd' : '#94a3b8',
+                      }}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '10px 12px', color: '#e2e8f0' }}>{(order.total || 0).toFixed(2)}</td>
+                    <td style={{ padding: '10px 12px', color: '#64748b' }}>{new Date(order.created_at).toLocaleDateString()}</td>
+                  </tr>
                 ))}
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-orq-text-3">
-                <span>Mar 1</span><span>Mar 10</span><span>Mar 20</span><span>Mar 31</span>
-              </div>
-            </div>
-
-            {/* Activity feed */}
-            <div className="bg-orq-surface border border-orq-border rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-orq-text">Recent Activity</h3>
-                <button className="text-xs text-orq-green hover:text-emerald-300 transition">View All</button>
-              </div>
-              <div className="space-y-4">
-                {config.recentActivity.map((item, i) => (
-                  <div key={i} className="flex gap-3 items-start">
-                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${activityColors[item.type] || 'bg-orq-green'}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-orq-text-2 leading-relaxed">{item.text}</p>
-                      <span className="text-xs text-orq-text-3">{item.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Compliance status */}
-            <div className="bg-orq-surface border border-orq-border rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-orq-text mb-4">Compliance Status</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: 'License', status: 'Active', color: 'text-emerald-400 bg-emerald-950/60 border-emerald-800/50' },
-                  { label: 'METRC', status: 'Synced', color: 'text-emerald-400 bg-emerald-950/60 border-emerald-800/50' },
-                  { label: 'COAs', status: '12 on file', color: 'text-blue-400 bg-blue-950/60 border-blue-800/50' },
-                ].map((c, i) => (
-                  <div key={i} className={`rounded-lg border p-3 ${c.color}`}>
-                    <div className="text-xs opacity-70 mb-1">{c.label}</div>
-                    <div className="text-sm font-semibold">{c.status}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+              </tbody>
+            </table>
+          )}
         </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Main Dashboard Page ───────────────────────────────────────────────────────
-export default function DashboardPage() {
-  const [role, setRole] = useState<OperatorRole>('cultivator')
-
-  return (
-    <div className="min-h-screen bg-[#070D09] flex">
-      <Sidebar role={role} onRoleChange={setRole} />
-      <DashboardContent role={role} />
+      </main>
     </div>
   )
 }
