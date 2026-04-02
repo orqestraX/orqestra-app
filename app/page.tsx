@@ -298,7 +298,7 @@ export default function HomePage() {
               Buy and sell flower, concentrates, edibles, and more — directly between licensed operators. No middleman. Real-time pricing. Fully compliant.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/onboarding"
+              <Link href="/auth/signin"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-base transition-all"
                 style={{ background: '#22c55e', color: '#fff' }}>
                 Sign In
