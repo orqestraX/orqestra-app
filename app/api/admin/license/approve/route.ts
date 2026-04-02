@@ -7,6 +7,7 @@ import { licenseApprovedEmail } from '@/lib/email/templates'
 export async function POST(req: NextRequest) {
   await requireAdmin()
   const { operator_id, verification_id } = await req.json()
+
   if (!operator_id || !verification_id) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
@@ -39,11 +40,10 @@ export async function POST(req: NextRequest) {
     metadata: { verification_id },
   })
 
-  // Send approval email
   if (operator?.email) {
     await sendEmail({
       to: operator.email,
-      subject: '✅ Your NM cannabis license has been verified — Orqestra',
+      subject: 'Orqestra',
       html: licenseApprovedEmail({ businessName: operator.business_name }),
     })
   }
