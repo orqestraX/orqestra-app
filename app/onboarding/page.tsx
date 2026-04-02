@@ -17,7 +17,7 @@ export default async function OnboardingPage() {
     .single()
 
   if (operator) {
-    if (operator.account_status === 'verified') redirect('/dashboard')
+    if (operator.account_status === 'active') redirect('/dashboard')
     redirect('/onboarding/pending')
   }
 
