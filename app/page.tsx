@@ -301,7 +301,7 @@ export default function HomePage() {
               <Link href="/onboarding"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-base transition-all"
                 style={{ background: '#22c55e', color: '#fff' }}>
-                Start Selling Free →
+                Sign In
               </Link>
               <Link href="#products"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-base transition-all"
