@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!buyer) return NextResponse.json({ error: 'Operator profile not found' }, { status: 404 })
-  if (buyer.account_status !== 'verified') {
+  if (buyer.account_status !== 'active') {
     return NextResponse.json({ error: 'Account must be verified to place orders' }, { status: 403 })
   }
 
