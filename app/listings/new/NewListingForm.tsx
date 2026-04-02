@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -65,61 +66,70 @@ export default function NewListingForm() {
     }
   }
 
-  const input: React.CSSProperties = {
-    width: '100%', padding: '10px 14px', background: '#0f1117',
-    border: '1px solid #2d3148', borderRadius: 8, color: '#e2e8f0',
-    fontSize: 14, boxSizing: 'border-box',
+  const input: CSSProperties = {
+    width: '100%',
+    padding: '10px 14px',
+    background: '#0f1117',
+    border: '1px solid #2d3148',
+    borderRadius: 8,
+    color: '#e2e8f0',
+    fontSize: 14,
+    boxSizing: 'border-box',
   }
-  const label: React.CSSProperties = { fontSize: 13, color: '#94a3b8', marginBottom: 6, display: 'block' }
-  const card: React.CSSProperties = { background: '#1a1d2e', borderRadius: 12, padding: '24px', border: '1px solid #2d3148' }
-  const cardTitle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 0, marginBottom: 20 }
+  const labelStyle: CSSProperties = { fontSize: 13, color: '#94a3b8', marginBottom: 6, display: 'block' }
+  const card: CSSProperties = {
+    background: '#1a1d2e',
+    borderRadius: 12,
+    padding: '24px',
+    border: '1px solid #2d3148',
+  }
+  const cardTitle: CSSProperties = {
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#64748b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    marginTop: 0,
+    marginBottom: 20,
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0f1117', color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif', padding: '40px 0' }}>
       <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 24px' }}>
-
         <div style={{ marginBottom: 32 }}>
-          <Link href="/listings" style={{ color: '#64748b', textDecoration: 'none', fontSize: 13 }}>← Back to listings</Link>
+          <Link href="/listings" style={{ color: '#64748b', textDecoration: 'none', fontSize: 13 }}>&#8592; Back to listings</Link>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#f1f5f9', marginTop: 12, marginBottom: 4 }}>Create Listing</h1>
           <p style={{ color: '#64748b', fontSize: 14, margin: 0 }}>List your product on the Orqestra marketplace</p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
           {/* Product Details */}
           <div style={card}>
             <h2 style={cardTitle}>Product Details</h2>
-
             <div style={{ marginBottom: 16 }}>
-              <label style={label}>Product Title *</label>
-              <input style={input} value={form.title} onChange={(e) => set('title', e.target.value)}
-                placeholder="e.g. Blue Dream Flower — Batch #24" required />
+              <label style={labelStyle}>Product Title *</label>
+              <input style={input} value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="e.g. Blue Dream Flower — Batch #24" required />
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={label}>Category *</label>
+                <label style={labelStyle}>Category *</label>
                 <select style={input} value={form.category} onChange={(e) => set('category', e.target.value)}>
                   {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
               <div>
-                <label style={label}>Strain Name</label>
-                <input style={input} value={form.strain_name} onChange={(e) => set('strain_name', e.target.value)}
-                  placeholder="e.g. Blue Dream" />
+                <label style={labelStyle}>Strain Name</label>
+                <input style={input} value={form.strain_name} onChange={(e) => set('strain_name', e.target.value)} placeholder="e.g. Blue Dream" />
               </div>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
-                <label style={label}>THC %</label>
-                <input style={input} type="number" step="0.1" min="0" max="100"
-                  value={form.thc_pct} onChange={(e) => set('thc_pct', e.target.value)} placeholder="e.g. 22.5" />
+                <label style={labelStyle}>THC %</label>
+                <input style={input} type="number" step="0.1" min="0" max="100" value={form.thc_pct} onChange={(e) => set('thc_pct', e.target.value)} placeholder="e.g. 22.5" />
               </div>
               <div>
-                <label style={label}>CBD %</label>
-                <input style={input} type="number" step="0.1" min="0" max="100"
-                  value={form.cbd_pct} onChange={(e) => set('cbd_pct', e.target.value)} placeholder="e.g. 0.3" />
+                <label style={labelStyle}>CBD %</label>
+                <input style={input} type="number" step="0.1" min="0" max="100" value={form.cbd_pct} onChange={(e) => set('cbd_pct', e.target.value)} placeholder="e.g. 0.3" />
               </div>
             </div>
           </div>
@@ -127,34 +137,26 @@ export default function NewListingForm() {
           {/* Pricing & Inventory */}
           <div style={card}>
             <h2 style={cardTitle}>Pricing &amp; Inventory</h2>
-
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={label}>Price per Unit ($) *</label>
-                <input style={input} type="number" step="0.01" min="0"
-                  value={form.price_per_unit} onChange={(e) => set('price_per_unit', e.target.value)}
-                  placeholder="0.00" required />
+                <label style={labelStyle}>Price per Unit ($) *</label>
+                <input style={input} type="number" step="0.01" min="0" value={form.price_per_unit} onChange={(e) => set('price_per_unit', e.target.value)} placeholder="0.00" required />
               </div>
               <div>
-                <label style={label}>Unit *</label>
+                <label style={labelStyle}>Unit *</label>
                 <select style={input} value={form.unit} onChange={(e) => set('unit', e.target.value)}>
                   {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
                 </select>
               </div>
             </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
-                <label style={label}>Available Quantity *</label>
-                <input style={input} type="number" step="0.01" min="0"
-                  value={form.available_qty} onChange={(e) => set('available_qty', e.target.value)}
-                  placeholder="0" required />
+                <label style={labelStyle}>Available Quantity *</label>
+                <input style={input} type="number" step="0.01" min="0" value={form.available_qty} onChange={(e) => set('available_qty', e.target.value)} placeholder="0" required />
               </div>
               <div>
-                <label style={label}>Min Order Quantity</label>
-                <input style={input} type="number" step="0.01" min="0"
-                  value={form.min_order_qty} onChange={(e) => set('min_order_qty', e.target.value)}
-                  placeholder="1" />
+                <label style={labelStyle}>Min Order Quantity</label>
+                <input style={input} type="number" step="0.01" min="0" value={form.min_order_qty} onChange={(e) => set('min_order_qty', e.target.value)} placeholder="1" />
               </div>
             </div>
           </div>
@@ -187,7 +189,6 @@ export default function NewListingForm() {
               {submitting ? 'Creating…' : 'Create Listing'}
             </button>
           </div>
-
         </form>
       </div>
     </div>
