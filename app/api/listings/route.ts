@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!operator) return NextResponse.json({ error: 'Operator profile not found' }, { status: 404 })
-  if (operator.account_status !== 'verified') return NextResponse.json({ error: 'Account must be verified to create listings' }, { status: 403 })
+  if (operator.account_status !== 'active') return NextResponse.json({ error: 'Account must be verified to create listings' }, { status: 403 })
   if (operator.operator_type === 'dispensary') return NextResponse.json({ error: 'Dispensaries cannot create listings' }, { status: 403 })
 
   let body: Record<string, unknown>
