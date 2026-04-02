@@ -36,7 +36,6 @@ interface Listing {
 export default async function ListingsPage() {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) redirect('/auth/signin?redirect=/listings')
 
   const { data: operatorData } = await supabase
@@ -46,7 +45,6 @@ export default async function ListingsPage() {
     .single()
 
   if (!operatorData) redirect('/onboarding')
-
   const op = operatorData as Operator
 
   if (op.account_status === 'pending') redirect('/onboarding/pending')
@@ -69,7 +67,7 @@ export default async function ListingsPage() {
   }
 
   const { data: listingsData } = await query
-  const listings = (listingsData ?? []) as Listing[]
+  const listings = (listingsData ?? []) as unknown as Listing[]
 
   return (
     <ListingsClient
