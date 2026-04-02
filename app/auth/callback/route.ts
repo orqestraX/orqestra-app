@@ -10,9 +10,10 @@ export async function GET(req: NextRequest) {
   if (code) {
     const supabase = await createServerSupabaseClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
+
     if (!error) {
-      // Check if operator profile exists
       const { data: { user } } = await supabase.auth.getUser()
+
       if (user) {
         const { data: operator } = await supabase
           .from('operators')
@@ -21,18 +22,16 @@ export async function GET(req: NextRequest) {
           .single()
 
         if (!operator) {
-          // New user — redirect to onboarding
           return NextResponse.redirect(new URL('/onboarding', origin))
         }
 
-        // Check if this is their first login (account just created within last 5 minutes)
-        const isNew = operator.created_at && 
+        const isNew = operator.created_at &&
           (Date.now() - new Date(operator.created_at).getTime()) < 5 * 60 * 1000
-        
+
         if (isNew && operator.email) {
           await sendEmail({
             to: operator.email,
-            subject: 'Welcome to Orqestra — Complete your profile',
+            subject: 'Orqestra',
             html: welcomeEmail({
               businessName: operator.business_name,
               operatorType: operator.operator_type,
