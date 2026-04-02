@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   if (operator?.email) {
     await sendEmail({
       to: operator.email,
-      subject: 'Action required: License verification issue — Orqestra',
+      subject: 'Orqestra',
       html: licenseRejectedEmail({ businessName: operator.business_name, reason }),
     })
   }
