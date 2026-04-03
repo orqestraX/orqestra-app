@@ -17,7 +17,7 @@ export default async function NewListingPage() {
   if (!operatorData) redirect('/onboarding')
 
   // Only verified non-dispensary operators can create listings
-  if (operatorData.account_status !== 'verified') redirect('/dashboard')
+  if (operatorData.account_status !== 'active') redirect('/dashboard')
   if (operatorData.operator_type === 'dispensary') redirect('/dashboard')
 
   return <NewListingForm />
