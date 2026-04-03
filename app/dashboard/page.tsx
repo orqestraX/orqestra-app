@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+—import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
@@ -96,10 +96,10 @@ export default async function DashboardPage() {
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: '⊞' },
-    { href: '/listings', label: isDispensary ? 'Marketplace' : 'My Listings', icon: isDispensary ? '🛒' : '📦' },
-    { href: '/orders', label: isDispensary ? 'My Orders' : 'Sales', icon: '📋' },
-    { href: '/logistics', label: 'Logistics', icon: '🚚' },
-    { href: '/compliance', label: 'Compliance', icon: '✓' },
+    { href: isDispensary ? '/marketplace' : '/listings', label: isDispensary ? 'Marketplace' : 'My Listings', icon: isDispensary ? '🛒' : '📦' },
+    
+    { href: '/orders', label: 'Orders', icon: '📋' },
+    { href: '/settings', label: 'Settings', icon: '⚙' },
     { href: '/settings', label: 'Settings', icon: '⚙' },
   ]
 
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
             {op.city ? ` · ${op.city}` : ''}
           </div>
           <div style={{ marginTop: 8 }}>
-            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 999, background: op.account_status === 'verified' ? '#14532d' : '#713f12', color: op.account_status === 'verified' ? '#86efac' : '#fde68a' }}>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 999, background: op.account_status === 'active' ? '#14532d' : '#713f12', color: op.account_status === 'active' ? '#86efac' : '#fde68a' }}>
               {op.account_status}
             </span>
           </div>
