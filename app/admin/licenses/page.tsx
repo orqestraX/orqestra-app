@@ -1,12 +1,12 @@
 // app/admin/licenses/page.tsx — Admin license verification queue
-// Protected by middleware: requires role = 'admin'
 import { requireAdmin } from '@/lib/session'
 import { createAdminClient } from '@/lib/supabase/server'
+import LicenseActions from './LicenseActions'
 
 export default async function AdminLicensesPage() {
   await requireAdmin()
-
   const admin = createAdminClient()
+
   const { data: pending } = await admin
     .from('license_verifications')
     .select('*, operators(business_name, email, operator_type, city)')
@@ -16,7 +16,7 @@ export default async function AdminLicensesPage() {
   const { data: recent } = await admin
     .from('license_verifications')
     .select('*, operators(business_name, email, operator_type)')
-    .in('status', ['verified', 'rejected'])
+    .in('status', ['verified', 'rejected', 'approved'])
     .order('reviewed_at', { ascending: false })
     .limit(20)
 
@@ -33,7 +33,7 @@ export default async function AdminLicensesPage() {
           <h2 style={{ fontSize: 18, fontWeight: 700, color: '#fbbf24', marginBottom: 16 }}>
             Pending Review ({pending?.length ?? 0})
           </h2>
-          {pending?.length === 0 && (
+          {(!pending || pending.length === 0) && (
             <p style={{ color: '#6b7280' }}>No pending submissions.</p>
           )}
           {pending?.map((v: any) => (
@@ -46,28 +46,13 @@ export default async function AdminLicensesPage() {
                   <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>Submitted: {new Date(v.submitted_at).toLocaleDateString()}</div>
                   {v.notes && <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>Notes: {v.notes}</div>}
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                  <form action='/api/admin/license/approve' method='POST'>
-                    <input type='hidden' name='id' value={v.id} />
-                    <input type='hidden' name='operator_id' value={v.operator_id} />
-                    <button type='submit' style={{ background: '#22c55e', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', fontWeight: 700, cursor: 'pointer' }}>
-                      Approve
-                    </button>
-                  </form>
-                  <form action='/api/admin/license/reject' method='POST'>
-                    <input type='hidden' name='id' value={v.id} />
-                    <input type='hidden' name='operator_id' value={v.operator_id} />
-                    <button type='submit' style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', fontWeight: 700, cursor: 'pointer' }}>
-                      Reject
-                    </button>
-                  </form>
-                </div>
+                <LicenseActions verificationId={v.id} operatorId={v.operator_id} />
               </div>
             </div>
           ))}
         </section>
 
-        {/* Recent decisions */}
+        {/* Recently reviewed */}
         <section>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: '#d1fae5', marginBottom: 16 }}>Recently Reviewed</h2>
           {recent?.map((v: any) => (
@@ -77,9 +62,9 @@ export default async function AdminLicensesPage() {
                 <span style={{ color: '#6b7280', fontSize: 13, marginLeft: 12 }}>{v.license_number}</span>
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
-                background: v.status === 'verified' ? '#14532d' : '#450a0a',
-                color: v.status === 'verified' ? '#4ade80' : '#f87171' }}>
-                {v.status === 'verified' ? 'Approved' : 'Rejected'}
+                background: v.status === 'approved' || v.status === 'verified' ? '#14532d' : '#450a0a',
+                color: v.status === 'approved' || v.status === 'verified' ? '#4ade80' : '#f87171' }}>
+                {v.status === 'approved' || v.status === 'verified' ? 'Approved' : 'Rejected'}
               </span>
             </div>
           ))}
